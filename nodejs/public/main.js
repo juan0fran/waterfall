@@ -17,6 +17,10 @@ function keypress(e, spectrum) {
         spectrum.incrementSpectrumPercent();
     } else if (e.key == "w") {
         spectrum.decrementSpectrumPercent();
+    } else if (e.key == "+") {
+        spectrum.incrementAveraging();
+    } else if (e.key == "-") {
+        spectrum.decrementAveraging();
     } 
 }
 

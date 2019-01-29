@@ -19,40 +19,28 @@ function keypress(e, spectrum) {
         spectrum.incrementSpectrumPercent();
     } else if (e.key == "w") {
         spectrum.decrementSpectrumPercent();
+    } else if (e.key == "+") {
+        spectrum.incrementAveraging();
+    } else if (e.key == "-") {
+        spectrum.decrementAveraging();
     } 
 }
 
-function main() {
-    // Create spectrum object on canvas with ID "waterfall"
-    var spectrum = new Spectrum(
-        "waterfall", {
-            spectrumPercent: 20
-    });
-
-    // Bind keypress handler
-    window.addEventListener("keydown", function (e) {
-        keypress(e, spectrum);
-    });
-
-    var keepaliveID;
-
-    // Connect to websocket
+function connectWebSocket(spectrum) {
     var ws = new WebSocket("ws://" + window.location.host + "/websocket");
     ws.onopen = function(evt) {
         console.log("connected!");
     }
     ws.onclose = function(evt) {
         console.log("closed");
-        // try to reconnect
-        setTimeout(function(){main()}, 1000); 
+        setTimeout(function() {
+            connectWebSocket(spectrum);
+        }, 1000);
     }
-
-
-
+    ws.onerror = function(evt) {
+        console.log("error: " + evt.message);
+    }
     ws.onmessage = function (evt) {
-
-        clearTimeout(keepaliveID)
-        
         var data = JSON.parse(evt.data);
         if (data.s) {
             spectrum.addData(data.s);
@@ -64,14 +52,23 @@ function main() {
                 spectrum.setSpanHz(data.span);
             }
         }
-        keepaliveID = setTimeout(function()
-        {
-            ws.close();
-        },5000,ws)
     }
-    ws.onerror = function(evt) {
-        console.log("error: " + evt);
-    }
+}
+
+function main() {
+    // Create spectrum object on canvas with ID "waterfall"
+    var spectrum = new Spectrum(
+        "waterfall", {
+            spectrumPercent: 20
+    });
+
+    // Connect to websocket
+    connectWebSocket(spectrum);
+
+    // Bind keypress handler
+    window.addEventListener("keydown", function (e) {
+        keypress(e, spectrum);
+    });
 }
 
 window.onload = main;
