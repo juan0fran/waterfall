@@ -17,7 +17,7 @@ services:
       - "--sample-rate"
       - "20e6"
       - "--frequency"
-      - "940e6"
+      - "777e6"
       - "--gain"
       - "40"
       - "--fft-size"
