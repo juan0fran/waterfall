@@ -67,8 +67,6 @@ function main() {
         keepaliveID = setTimeout(function()
         {
             ws.close();
-            main();
-
         },5000,ws)
     }
     ws.onerror = function(evt) {
