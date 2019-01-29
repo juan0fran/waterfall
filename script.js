@@ -34,6 +34,8 @@ function main() {
         keypress(e, spectrum);
     });
 
+    var keepaliveID;
+
     // Connect to websocket
     var ws = new WebSocket("ws://" + window.location.host + "/websocket");
     ws.onopen = function(evt) {
@@ -44,7 +46,13 @@ function main() {
         // try to reconnect
         setTimeout(function(){main()}, 1000); 
     }
+
+
+
     ws.onmessage = function (evt) {
+
+        clearTimeout(keepaliveID)
+        
         var data = JSON.parse(evt.data);
         if (data.s) {
             spectrum.addData(data.s);
@@ -56,6 +64,12 @@ function main() {
                 spectrum.setSpanHz(data.span);
             }
         }
+        keepaliveID = setTimeout(function()
+        {
+            ws.close();
+            main();
+
+        },5000,ws)
     }
     ws.onerror = function(evt) {
         console.log("error: " + evt);
