@@ -100,17 +100,16 @@ class fft_receiver(gr.top_block):
         # self.usrp.set_gain(gain, 0)
         shift = 0
         rx_rf_gain  = 0
-        rx_if_gain = 21
         rx_bb_gain  = 15
         self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'hackrf=0' )
-        self.osmosdr_source_0.set_sample_rate(args.sample_rate)
-        self.osmosdr_source_0.set_center_freq(args.frequency+shift, 0)
+        self.osmosdr_source_0.set_sample_rate(samp_rate)
+        self.osmosdr_source_0.set_center_freq(freq+shift, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
         self.osmosdr_source_0.set_dc_offset_mode(2, 0)
         self.osmosdr_source_0.set_iq_balance_mode(2, 0)
         self.osmosdr_source_0.set_gain_mode(True, 0)
         self.osmosdr_source_0.set_gain(rx_rf_gain, 0)
-        self.osmosdr_source_0.set_if_gain(rx_if_gain, 0)
+        self.osmosdr_source_0.set_if_gain(gain, 0)
         self.osmosdr_source_0.set_bb_gain(rx_bb_gain, 0)
         self.osmosdr_source_0.set_antenna('', 0)
         self.osmosdr_source_0.set_bandwidth(0, 0)
@@ -133,7 +132,7 @@ class fft_receiver(gr.top_block):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--sample-rate', type=float, default=40e6)
+    parser.add_argument('-s', '--sample-rate', type=float, default=20e6)
     parser.add_argument('-f', '--frequency', type=float, default=940e6)
     parser.add_argument('-g', '--gain', type=float, default=40)
     parser.add_argument('-n', '--fft-size', type=int, default=4096)
