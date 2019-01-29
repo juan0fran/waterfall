@@ -46,8 +46,8 @@ def handle_websocket():
             wsock.receive()
         except WebSocketError:
             break
-
-    connections.remove(wsock)
+    if wsock:
+        connections.remove(wsock)
 
 
 @app.route('/')
