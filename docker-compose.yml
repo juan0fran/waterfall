@@ -4,9 +4,23 @@ services:
   waterfall:
     container_name: waterfall_webserver
     build: ./
+    privileged: true
     cap_add:
       - SYS_NICE
     devices:
       - /dev/bus/usb
     ports:
       - "18000:8000"
+    entrypoint:
+      - python
+      - server.py
+      - --sample-rate
+      - 20e6
+      - --frequency
+      - 940e6
+      - --gain
+      - 40
+      - --fft-size
+      - 4096
+      - --frame-rate
+      - 25
