@@ -1,0 +1,12 @@
+version: '2.0'
+
+services:
+  waterfall:
+    container_name: waterfall_webserver
+    build: ./
+    cap_add:
+      - SYS_NICE
+    devices:
+      - /dev/bus/usb
+    ports:
+      - "18000:8000"
