@@ -1,16 +1,23 @@
 version: '2.0'
 
 services:
-  waterfall:
-    container_name: waterfall_webserver
+  waterfall_frontend:
+    container_name: waterfall_web
+    build: ./nodejs
+    depends_on:
+      - waterfall_backend
+    links:
+      - waterfall_backend
+    ports:
+      - "18000:3000"
+
+  waterfall_backend:
+    container_name: waterfall_server
     build: ./
-    privileged: true
     cap_add:
       - SYS_NICE
     devices:
       - /dev/bus/usb
-    ports:
-      - "18000:8000"
     entrypoint:
       - "python"
       - "server.py"

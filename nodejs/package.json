@@ -1,0 +1,16 @@
+{
+  "name": "spectralserver",
+  "version": "1.0.0",
+  "description": "a NodeJS WS proxy for serving spectral analyser efficiently",
+  "main": "server.js",
+  "author": "Yan Grunenberger <yan@grunenberger.net>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "socket.io": "^2.2.0",
+    "websocket": "^1.0.28"
+  }
+}

@@ -147,14 +147,17 @@ def main():
     if gr.enable_realtime_scheduling() != gr.RT_OK or 0:
         print("Error: failed to enable real-time scheduling.")
 
-    tb = fft_receiver(
+    try:
+        tb = fft_receiver(
         samp_rate=args.sample_rate,
         freq=args.frequency,
         gain=args.gain,
         fft_size=args.fft_size,
         framerate=args.frame_rate
     )
-    tb.start()
+        tb.start()
+    except Exception:
+        sys.exit(1)
 
     opts['center'] = args.frequency
     opts['span'] = args.sample_rate
