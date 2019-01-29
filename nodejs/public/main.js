@@ -38,8 +38,8 @@ function main()
     	console.log("disconnected from server")
     });
 
-    socket.on('message', function(data){
-    	console.log("received message " + data)
+    socket.on('message', function(msg){
+    	console.log("received message from server " + msg)
     })
 
     socket.on('data', function(data){

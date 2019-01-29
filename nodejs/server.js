@@ -95,7 +95,6 @@ client.onmessage = function(evt) {
 
 	clearTimeout(keepalive)
 
-	console.log('WS Client Message');
 	main_events_loop.emit("data",JSON.parse(evt.data))
   
 	keepalive = setTimeout(function()
