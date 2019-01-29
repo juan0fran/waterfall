@@ -49,7 +49,7 @@ def handle_websocket():
     if wsock:
         try: 
             connections.remove(wsock)
-        exception Exception:
+        except Exception:
             return
 
 
