@@ -80,7 +80,8 @@ class fft_broadcast_sink(gr.sync_block):
                 try:
                     c.send(json.dumps({'s': list(p)}, separators=(',', ':')))
                 except Exception:
-                    connections.remove(c)
+                    if c:
+                        connections.remove(c)
 
         self.consume(0, ninput_items)
 
