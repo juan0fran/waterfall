@@ -27,6 +27,7 @@ import osmosdr
 
 app = Bottle()
 connections = set()
+opts = {}
 
 
 @app.route('/websocket')
@@ -36,6 +37,9 @@ def handle_websocket():
         abort(400, 'Expected WebSocket request.')
 
     connections.add(wsock)
+
+    # Send center frequency and span
+    wsock.send(json.dumps(opts))
 
     while True:
         try:
@@ -95,14 +99,12 @@ class fft_receiver(gr.top_block):
         # self.usrp.set_center_freq(freq, 0)
         # self.usrp.set_gain(gain, 0)
         shift = 0
-        samp_rate  = 20e6
         rx_rf_gain  = 0
         rx_if_gain = 21
         rx_bb_gain  = 15
-        freq= 930e6
         self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'hackrf=0' )
-        self.osmosdr_source_0.set_sample_rate(samp_rate)
-        self.osmosdr_source_0.set_center_freq(freq+shift, 0)
+        self.osmosdr_source_0.set_sample_rate(args.sample_rate)
+        self.osmosdr_source_0.set_center_freq(args.frequency+shift, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
         self.osmosdr_source_0.set_dc_offset_mode(2, 0)
         self.osmosdr_source_0.set_iq_balance_mode(2, 0)
@@ -151,7 +153,10 @@ def main():
     )
     tb.start()
 
-    server = WSGIServer(("0.0.0.0", 18000), app,
+    opts['center'] = args.frequency
+    opts['span'] = args.sample_rate
+
+    server = WSGIServer(("0.0.0.0", 8000), app,
                         handler_class=WebSocketHandler)
     try:
         server.serve_forever()
