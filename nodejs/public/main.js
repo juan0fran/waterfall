@@ -40,20 +40,20 @@ function main()
 
     socket.on('message', function(msg){
     	console.log("received message from server " + msg)
+
+    	if (msg.center) {
+    		spectrum.setCenterHz(msg.center);
+    	}
+    	if (msg.span) {
+    		spectrum.setSpanHz(msg.span);
+    	}
+
     })
 
     socket.on('data', function(data){
 
-        if (data.s) {
-            spectrum.addData(data.s);
-        } else {
-            if (data.center) {
-                spectrum.setCenterHz(data.center);
-            }
-            if (data.span) {
-                spectrum.setSpanHz(data.span);
-            }
-        }
+    	spectrum.addData(data);
+    	
     })
 
 }

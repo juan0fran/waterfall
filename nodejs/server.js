@@ -24,6 +24,7 @@ const EVENT_BROWSER_DISCONNECT 	= "browser_disconnect"
 const EVENT_BROWSER_CONNECT 	= "browser_connect"
 const EVENT_BROWSER_MESSAGE 	= "browser_message"
 const EVENT_WS_DATA 			= "ws_data"
+const EVENT_BROWSER_BROADCAST 	= "broadcast"
 
 main_events_loop.on("event", function(event){
 
@@ -58,6 +59,15 @@ io.on('connection', function (socket) {
   main_events_loop.on("data",function(data)
   {
   	socket.compress(true).emit("data",data)
+  })
+
+  main_events_loop.on("event",function(event)
+  {
+  	if (event && event.type == EVENT_BROWSER_BROADCAST)
+  	{
+		socket.emit("message",event.data)
+  	}
+
   })
 
   socket.on('disconnect', function () {
@@ -95,7 +105,18 @@ client.onmessage = function(evt) {
 
 	clearTimeout(keepalive)
 
-	main_events_loop.emit("data",JSON.parse(evt.data))
+	var data = JSON.parse(evt.data)
+
+	if (data.s)
+	{
+		main_events_loop.emit("data",data.s)
+	}
+	else
+	{
+		// new spectrum context info (freq etc)
+		main_events_loop.emit("event",{"type" : EVENT_BROWSER_BROADCAST, "data" : data })
+	}
+	
   
 	keepalive = setTimeout(function()
     {
