@@ -19,6 +19,8 @@ console.log("Web server listening on port " + WEB_LISTENING_PORT);
 
 var main_events_loop = new events.EventEmitter();
 
+var metadata;
+
 // events
 const EVENT_BROWSER_DISCONNECT 	= "browser_disconnect"
 const EVENT_BROWSER_CONNECT 	= "browser_connect"
@@ -44,6 +46,10 @@ main_events_loop.on("event", function(event){
 			console.log("Browser " + event.data.id + " just sent " + event.data.payload)
 			break
 
+			case EVENT_BROWSER_BROADCAST:
+			metadata = event.data
+			break
+
 			default:
 
 		}
@@ -61,14 +67,10 @@ io.on('connection', function (socket) {
   	socket.compress(true).emit("data",data)
   })
 
-  main_events_loop.on("event",function(event)
+  if (metadata)
   {
-  	if (event && event.type == EVENT_BROWSER_BROADCAST)
-  	{
-		socket.emit("message",event.data)
-  	}
-
-  })
+  	 socket.emit("message",metadata)
+  }
 
   socket.on('disconnect', function () {
   	main_events_loop.emit("event",{"type" : EVENT_BROWSER_DISCONNECT, "data" : { "id" : socket.id }})
