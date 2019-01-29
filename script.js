@@ -41,6 +41,8 @@ function main() {
     }
     ws.onclose = function(evt) {
         console.log("closed");
+        // try to reconnect
+        setTimeout(function(){main()}, 1000); 
     }
     ws.onmessage = function (evt) {
         var data = JSON.parse(evt.data);
