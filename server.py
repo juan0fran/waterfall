@@ -44,7 +44,8 @@ def handle_websocket():
     while True:
         try:
             wsock.receive()
-        except WebSocketError:
+        except Exception as e:
+            print str(e)
             break
     if wsock:
         connections.remove(wsock)
@@ -76,7 +77,8 @@ class fft_broadcast_sink(gr.sync_block):
             for c in connections.copy():
                 try:
                     c.send(json.dumps({'s': list(p)}, separators=(',', ':')))
-                except Exception:
+                except Exception as e:
+                    print str(e)
                     connections.remove(c)
 
         self.consume(0, ninput_items)
