@@ -13,6 +13,7 @@ import argparse
 from gnuradio import gr
 from gnuradio import uhd
 from gnuradio.fft import logpwrfft
+from gnuradio import zeromq 
 
 import numpy as np
 
@@ -21,8 +22,6 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 
 from bottle import request, Bottle, abort, static_file
-
-import osmosdr
 
 
 app = Bottle()
@@ -92,46 +91,21 @@ class fft_receiver(gr.top_block):
     def __init__(self, samp_rate, freq, gain, fft_size, framerate):
         gr.top_block.__init__(self, "Top Block")
 
-        # self.usrp = uhd.usrp_source(
-        #         ",".join(("", "")),
-        #         uhd.stream_args(
-        #             cpu_format="fc32",
-        #             channels=range(1),
-        #             ),
-        #         )
-        # self.usrp.set_samp_rate(samp_rate)
-        # self.usrp.set_center_freq(freq, 0)
-        # self.usrp.set_gain(gain, 0)
-        shift = 0
-        rx_rf_gain  = 0
-        rx_bb_gain  = 15
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'hackrf=0' )
-        self.osmosdr_source_0.set_sample_rate(samp_rate)
-        self.osmosdr_source_0.set_center_freq(freq+shift, 0)
-        self.osmosdr_source_0.set_freq_corr(0, 0)
-        self.osmosdr_source_0.set_dc_offset_mode(2, 0)
-        self.osmosdr_source_0.set_iq_balance_mode(2, 0)
-        self.osmosdr_source_0.set_gain_mode(True, 0)
-        self.osmosdr_source_0.set_gain(rx_rf_gain, 0)
-        self.osmosdr_source_0.set_if_gain(gain, 0)
-        self.osmosdr_source_0.set_bb_gain(rx_bb_gain, 0)
-        self.osmosdr_source_0.set_antenna('', 0)
-        self.osmosdr_source_0.set_bandwidth(0, 0)
-
+        self.zeromq_source_0 = zeromq.sub_source(gr.sizeof_gr_complex, 1, 'tcp://localhost:4041', 100, False, -1)
 
         self.fft = logpwrfft.logpwrfft_c(
             sample_rate=samp_rate,
             fft_size=fft_size,
             ref_scale=1,
             frame_rate=framerate,
-            avg_alpha=1,
-            average=False,
+            avg_alpha=0.8,
+            average=True,
         )
         self.fft_broadcast = fft_broadcast_sink(fft_size)
 
         self.connect((self.fft, 0), (self.fft_broadcast, 0))
-        #self.connect((self.usrp, 0), (self.fft, 0))
-        self.connect((self.osmosdr_source_0, 0), (self.fft, 0))
+        self.connect((self.zeromq_source_0, 0), (self.fft, 0))
+    
 
 
 def main():

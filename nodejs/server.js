@@ -3,7 +3,7 @@ const path = require('path');
 const events = require('events');
 
 const WEB_LISTENING_PORT = 3000;
-const WS_URL = 'ws://waterfall_backend:8000/websocket'
+const WS_URL = 'ws://localhost:8000/websocket'
 
 var app = express();
 var server = require('http').Server(app); // http server itself with express as an app
@@ -82,47 +82,52 @@ io.on('connection', function (socket) {
 
 })
 
-var W3CWebSocket = require('websocket').w3cwebsocket;
- 
-var client = new W3CWebSocket(WS_URL);
-var keepalive;
- 
-client.onerror = function() {
-    console.log('Connection Error');
-};
- 
-client.onopen = function() {
-    console.log('WS Client Connected');
 
-};
- 
-client.onclose = function() {
-    console.log('WS Client Closed');
-    client = new W3CWebSocket(WS_URL);
-};
+function startW3CWebSocket() 
+{
+	var W3CWebSocket = require('websocket').w3cwebsocket;
 
+	var client = new W3CWebSocket(WS_URL);
+	var keepalive;
 
- 
-client.onmessage = function(evt) {
+	client.onerror = function() {
+	    console.log('Connection Error');
+	};
+	 
+	client.onopen = function() {
+	    console.log('WS Client Connected');
 
-	clearTimeout(keepalive)
+	};
+	 
+	client.onclose = function() {
+	    console.log('WS Client Closed');
+	    setTimeout(startW3CWebSocket, 5000)
 
-	var data = JSON.parse(evt.data)
+	};
 
-	if (data.s)
-	{
-		main_events_loop.emit("data",data.s)
-	}
-	else
-	{
-		// new spectrum context info (freq etc)
-		main_events_loop.emit("event",{"type" : EVENT_BROWSER_BROADCAST, "data" : data })
-	}
-	
-  
-	keepalive = setTimeout(function()
-    {
-            client.close();
-    },1000,client)
+	client.onmessage = function(evt) {
 
-};
+		clearTimeout(keepalive)
+
+		var data = JSON.parse(evt.data)
+
+		if (data.s)
+		{
+			main_events_loop.emit("data",data.s)
+		}
+		else
+		{
+			// new spectrum context info (freq etc)
+			main_events_loop.emit("event",{"type" : EVENT_BROWSER_BROADCAST, "data" : data })
+		}
+		
+	  
+		keepalive = setTimeout(function()
+	    {
+		    client.close();
+	    },1000,client)
+
+	};
+}
+
+startW3CWebSocket()
