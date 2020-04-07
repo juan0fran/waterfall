@@ -35,8 +35,7 @@ function run() {
 	sockLocal.on('message', function(topic, message) {
 		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
 		wss.clients.forEach(function each(client) {
-			// GNURadio ZMQ msg sends 3 header bytes...
-			client.send(String(topic.slice(3)));
+			client.send(String(topic));
 		});
 	});
 
@@ -44,8 +43,7 @@ function run() {
 	sockRemote.on('message', function(topic, message) {
 		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
 		wss.clients.forEach(function each(client) {
-			// GNURadio ZMQ msg sends 3 header bytes...
-			client.send(String(topic.slice(3)));
+			client.send(String(topic));
 		});
 	});
 }
