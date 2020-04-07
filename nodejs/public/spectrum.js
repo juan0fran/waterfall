@@ -115,8 +115,8 @@ Spectrum.prototype.updateAxes = function() {
     this.ctx_axes.textBaseline = "middle";
 
     this.ctx_axes.textAlign = "left";
-    var step = 10;
-    for (var i = this.min_db + 10; i <= this.max_db - 10; i += step) {
+    var step = 5;
+    for (var i = this.min_db + 5; i <= this.max_db - 5; i += step) {
         var y = height - this.squeeze(i, 0, height);
         this.ctx_axes.fillText(i, 5, y);
 
@@ -246,12 +246,12 @@ Spectrum.prototype.rangeDown = function() {
 }
 
 Spectrum.prototype.rangeDouble = function() {
-    this.min_db *= 2; 
+    this.min_db += 5; 
     this.updateAxes();
 }
 
 Spectrum.prototype.rangeHalf = function() {
-    this.min_db /= 2; 
+    this.min_db -= 5; 
     this.updateAxes();
 }
 
@@ -332,7 +332,7 @@ function Spectrum(id, options) {
     // Setup state
     this.paused = false;
     this.fullscreen = false;
-    this.min_db = -120;
+    this.min_db = -60;
     this.max_db = -20;
     this.spectrumHeight = 0;
 

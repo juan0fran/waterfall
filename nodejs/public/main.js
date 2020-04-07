@@ -24,11 +24,12 @@ function keypress(e, spectrum) {
     } 
 }
 
+
 function main()
 {
 	var spectrum = new Spectrum(
         "waterfall", {
-            spectrumPercent: 20
+            spectrumPercent: 40
     });
 
     // Bind keypress handler
@@ -36,30 +37,31 @@ function main()
         keypress(e, spectrum);
     });
 
-    var socket = io.connect('/');
+    var ws = new WebSocket("ws://" + window.location.host + "/websocket_example");
+   
+    ws.onopen = function(evt) {
+        console.log("connected!");
+    }
+    ws.onclose = function(evt) {
+        console.log("closed");
+    }
+    ws.onerror = function(evt) {
+        console.log("error: " + evt.message);
+    }
+    ws.onmessage = function (evt) {
+        var data = JSON.parse(evt.data);
 
-    socket.on('disconnect', function(){
-    	console.log("disconnected from server")
-    });
-
-    socket.on('message', function(msg){
-    	console.log("received message from server " + msg)
-
-    	if (msg.center) {
-    		spectrum.setCenterHz(msg.center);
-    	}
-    	if (msg.span) {
-    		spectrum.setSpanHz(msg.span);
-    	}
-
-    })
-
-    socket.on('data', function(data){
-
-    	spectrum.addData(data);
-    	
-    })
-
+        if (data.data) {
+            spectrum.addData(data.data);
+        } else {
+            if (data.center) {
+                spectrum.setCenterHz(data.center);
+            }
+            if (data.span) {
+                spectrum.setSpanHz(data.span);
+            }
+        }
+    }
 }
 
 window.onload = main;
