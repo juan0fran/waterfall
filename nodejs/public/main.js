@@ -29,7 +29,7 @@ function main()
 {
 	var spectrum = new Spectrum(
         "waterfall", {
-            spectrumPercent: 40
+            spectrumPercent: 50
     });
 
     // Bind keypress handler

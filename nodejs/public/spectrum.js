@@ -332,8 +332,8 @@ function Spectrum(id, options) {
     // Setup state
     this.paused = false;
     this.fullscreen = false;
-    this.min_db = -80;
-    this.max_db = -50;
+    this.min_db = -85;
+    this.max_db = -40;
     this.spectrumHeight = 0;
 
     // Colors

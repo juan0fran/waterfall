@@ -33,7 +33,7 @@ function run() {
 
 	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
 	sockLocal.on('message', function(topic, message) {
-		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
+//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
 		wss.clients.forEach(function each(client) {
 			client.send(String(topic));
 		});
@@ -41,7 +41,7 @@ function run() {
 
 	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
 	sockRemote.on('message', function(topic, message) {
-		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
+//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
 		wss.clients.forEach(function each(client) {
 			client.send(String(topic));
 		});
