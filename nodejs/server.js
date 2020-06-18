@@ -23,29 +23,29 @@ var wss = new WSS({ server: server,
 				 );
 
 function run() {
-	var sockLocal = zmq.socket('pull');
+//	var sockLocal = zmq.socket('pull');
 	var sockRemote = zmq.socket('pull');
 
 	sockRemote.connect('tcp://10.52.72.7:54026');
-	sockLocal.connect('tcp://localhost:54026');
-	
-	console.log("Subscriber connected to port 54026");
+//	sockLocal.connect('tcp://localhost:54026');
+
+	console.log("ZMQ puller connected to port 54026");
 
 	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
-	sockLocal.on('message', function(topic, message) {
+//	sockLocal.on('message', function(topic, message) {
 //		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
-		wss.clients.forEach(function each(client) {
-			client.send(String(topic));
-		});
-	});
+//		wss.clients.forEach(function each(client) {
+//			client.send(String(topic));
+//		});
+//	});
 
 	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
 	sockRemote.on('message', function(topic, message) {
-//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
+//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length + " MSG: " + message);
 		wss.clients.forEach(function each(client) {
-			client.send(String(topic));
+			client.send(topic.toString());
 		});
 	});
-}
+};
 
 run()
