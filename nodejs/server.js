@@ -22,30 +22,19 @@ var wss = new WSS({ server: server,
 					path: "/websocket_example"}
 				 );
 
-function run() {
-//	var sockLocal = zmq.socket('pull');
-	var sockRemote = zmq.socket('pull');
+// Now using new API for ZMQ pull
+async function run() {
+  const sock = new zmq.Pull
 
-	sockRemote.connect('tcp://10.52.72.7:54026');
-//	sockLocal.connect('tcp://localhost:54026');
+  sock.connect("tcp://10.52.72.7:54026")
+  console.log("Worker connected to port 54026")
 
-	console.log("ZMQ puller connected to port 54026");
-
-	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
-//	sockLocal.on('message', function(topic, message) {
-//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length);
-//		wss.clients.forEach(function each(client) {
-//			client.send(String(topic));
-//		});
-//	});
-
-	// GNURadio ZMQ sockets send the message through the topic, retrocompatibility
-	sockRemote.on('message', function(topic, message) {
-//		console.log("New message from ZMQ at " + new Date() + ". Size: " + topic.length + " MSG: " + message);
-		wss.clients.forEach(function each(client) {
-			client.send(topic.toString());
-		});
+  for await (const [msg] of sock) {
+    //  console.log("work: %s", msg.toString())
+    wss.clients.forEach(function each(client) {
+		client.send(msg.toString());
 	});
-};
+  }
+}
 
 run()
